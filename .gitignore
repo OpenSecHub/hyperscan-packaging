@@ -33,6 +33,6 @@
 
 # Packages
 rpm/el7_x64/output
-rpm/el7_x64/output
-deb/output
+rpm/el8_x64/output
+deb/debian/output
 

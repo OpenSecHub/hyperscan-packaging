@@ -87,10 +87,8 @@ ldconfig >/dev/null 2>&1
 #                                                                            #
 ##############################################################################
 %defattr(-,root,root)
-%dir %attr(644,root,root) /usr/include/hs/
-%dir %attr(755,root,root) /usr/lib64/
-%attr(644,root,root)/usr/include/hs/*
-%attr(755,root,root) /usr/lib64/*
+/usr/include/hs/*
+/usr/lib64/*
 
 
 %changelog
