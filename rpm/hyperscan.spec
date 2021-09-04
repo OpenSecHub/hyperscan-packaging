@@ -1,81 +1,100 @@
 ##############################################################################
 #                                                                            #
 #                           Hyperscan Packaging                              #
-# Reference: https://rpm-packaging-guide.github.io/rpm-packaging-guide.pdf   #
-#            https://fedoraproject.org/wiki/RPMGroups                        #
-#            http://ftp.rpm.org/max-rpm/                                     #
-#            https://access.redhat.com/articles/3359321                      #
 #                                                                            #
 ##############################################################################
 Name:           hyperscan
 Version:        5.4.0
 Release:        1%{?dist}
-Summary:        Hyperscan is a high-performance multiple regex matching library
+Summary:        Libraries and header files for the hyperscan library
 Group:          Development/Libraries
 License:        BSD
 URL:            https://www.hyperscan.io/
 Vendor:         Intel
 BuildArch:      x86_64
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+ExclusiveArch:  x86_64
 Packager:       https://github.com/OpenSecHub/hyperscan-packaging
 
 Source0:        https://github.com/intel/hyperscan/archive/refs/tags/v%{version}.tar.gz
+Source1:        http://udomain.dl.sourceforge.net/project/pcre/pcre/8.45/pcre-8.45.tar.gz
+Source2:        http://udomain.dl.sourceforge.net/project/boost/boost/1.77.0/boost_1_77_0.tar.gz
 
-BuildRequires:  gcc-c++, make, cmake
+BuildRequires:  gcc-c++,make,cmake,ragel
+
 AutoReqProv:    no
 
 
 %description
-Hyperscan is a high-performance multiple regex matching library available as 
-open source with a C API. Hyperscan uses hybrid automata techniques to allow 
-simultaneous matching of large numbers of regular expressions across streams 
+Hyperscan is a high-performance multiple regex matching library. It
+follows the regular expression syntax of the commonly-used libpcre
+library, but is a standalone library with its own C API.
+
+Hyperscan uses hybrid automata techniques to allow simultaneous
+matching of large numbers (up to tens of thousands) of regular
+expressions and for the matching of regular expressions across streams
 of data.
+
+Hyperscan is typically used in a DPI library stack.
+
+This package provides the libraries(static and dynamic), include files and
+other resources needed for developing Hyperscan applications.
+
 
 ##############################################################################
 #                                                                            #
-#                           Build and Install                                #
+#                             Expand Sources                                 #
 #                                                                            #
 ##############################################################################
 %prep
-%setup -q -n "hyperscan-%{version}"
-
-
-### http://intel.github.io/hyperscan/dev-reference/getting_started.html
-%build
-
-%if 0%{?el} >= 8 || 0%{?rhel} >= 8
-cmake  -DCMAKE_BUILD_TYPE=RelWithDebInfo        \
-       -DBUILD_STATIC_AND_SHARED=on             \
-       -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr  \
-       .
-%else
-cmake  -DCMAKE_BUILD_TYPE=RelWithDebInfo        \
-       -DBUILD_STATIC_AND_SHARED=on             \
-       -DBOOST_ROOT=/boost                      \
-       -DCMAKE_INSTALL_PREFIX=%{buildroot}/usr  \
-       .
-%endif
-
-%{__make} -j`nproc`
-
-
-%install
-%{__make} install
-
-### fix prefix path
-sed -i "s#%{buildroot}##g" %{buildroot}/usr/lib64/pkgconfig/libhs.pc
-### delete example code
-rm -rf %{buildroot}/usr/share
-
-%clean
-rm -rf %{buildroot}
+%setup -q -b 1
+%setup -q -b 2
 
 ##############################################################################
 #                                                                            #
-#                       Scriptlet Directives                                 #
+#                                   Build                                    #
+#     http://intel.github.io/hyperscan/dev-reference/getting_started.html    #
+##############################################################################
+%build
+
+ln -s ../pcre-8.45             pcre
+
+# pcre, CMP0026 policy was introduced in CMake version 3.0, CentOS7 is 2.8.12
+%if 0%{?el} <8 || 0%{?rhel} < 8
+sed -i "s/CMAKE_POLICY/#CMAKE_POLICY/g"      pcre/CMakeLists.txt
+%endif
+
+mkdir build
+cd    build
+
+cmake  -DCMAKE_BUILD_TYPE=RelWithDebInfo  \
+       -DBUILD_STATIC_AND_SHARED:BOOL=ON  \
+       -DBOOST_ROOT=../boost_1_77_0       \
+       -DCMAKE_INSTALL_PREFIX=/usr        \
+       ..
+
+make -j`nproc`
+
+##############################################################################
+#                                                                            #
+#                                   Install                                  #
+#                                                                            #
+##############################################################################
+%install
+
+cd build
+%make_install
+
+
+##############################################################################
+#                                                                            #
+#                          Scriptlet Directives                              #
 #                                                                            #
 ##############################################################################
 %post
+
+ldconfig >/dev/null 2>&1
+
+%postun
 
 ldconfig >/dev/null 2>&1
 
@@ -86,10 +105,9 @@ ldconfig >/dev/null 2>&1
 #                                   FILES                                    #
 #                                                                            #
 ##############################################################################
-%defattr(-,root,root)
 /usr/include/hs/*
 /usr/lib64/*
-
+/usr/share/doc/hyperscan/examples/*
 
 %changelog
 ##############################################################################
@@ -97,5 +115,5 @@ ldconfig >/dev/null 2>&1
 #                              Change Logs                                   #
 #                                                                            #
 ##############################################################################
-* Thu Sep 2 2021 - LubinLew lgbxyz@gmail.com
+* Mon Sep 6 2021 - LubinLew lgbxyz@gmail.com
 - build hyperscan-%{version}

@@ -17,12 +17,12 @@ HS_VER=5.4.0
 BOOST_VER=1.77.0
 
 yum -y install epel-release # for ragel
-yum -y install ragel cmake gcc gcc-c++ bzip2
+yum -y install ragel make cmake gcc-c++
 
 mkdir hs_build
 cd hs_build
 
-curl https://codeload.github.com/intel/hyperscan/tar.gz/refs/tags/v${HS_VER} -ko v${HS_VER}.tar.gz || exit 1
+wget https://github.com/intel/hyperscan/archive/v${HS_VER}.tar.gz
 tar xf v${HS_VER}.tar.gz
 
 BOOST_FOLDER_NAME=`echo ${BOOST_VER} | sed 's/\./_/g'`
@@ -35,7 +35,8 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=MinSizeRel   \
       -DBUILD_STATIC_AND_SHARED=on    \
       -DBOOST_ROOT=../boost_${BOOST_FOLDER_NAME}  \
-      ../hyperscan-${HS_VER}
+          ../hyperscan-${HS_VER}
+
 
 make -j`nproc`
 
