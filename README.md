@@ -10,9 +10,9 @@ This package provides the libraries(static and dynamic), include files needed fo
 
 - [CentOS-8](rpm/el8_x64/)
 
-- Ubuntu - TODO
+- [Ubuntu(hirsute)  - Official](https://packages.ubuntu.com/hirsute/libhyperscan-dev)
 
-- Debian - TODO
+- [Debian(bullseye) - Official](https://packages.debian.org/bullseye/libhyperscan-dev)
 
 ----
 
@@ -80,6 +80,21 @@ $ rpm -qpl hyperscan-5.4.0-1.el7.x86_64.rpm
 /usr/share/doc/hyperscan/examples/README.md
 /usr/share/doc/hyperscan/examples/patbench.cc
 /usr/share/doc/hyperscan/examples/pcapscan.cc
+```
+
+-----
+
+## Usages
+
+```bash
+# libhs and libhs_runtime
+$ pkg-config --libs --cflags libhs
+-I/usr/include/hs -lhs
+
+# chimera
+$ pkg-config --libs --cflags libch
+-I/usr/include/hs -lchimera 
+
 ```
 
 -----
