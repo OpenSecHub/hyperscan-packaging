@@ -96,6 +96,13 @@ $ pkg-config --libs --cflags libch
 -I/usr/include/hs -lchimera 
 
 ```
+> Note:
+> 
+> If you want link the static library, you shoud use `-l:libhs.a` format, 
+> 
+> `-static` or `-Bstatic` options will make a lot of troubles.
+
+
 
 -----
 
