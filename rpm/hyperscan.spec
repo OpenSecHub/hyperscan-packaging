@@ -5,7 +5,7 @@
 ##############################################################################
 Name:           hyperscan
 Version:        5.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Libraries and header files for the hyperscan library
 Group:          Development/Libraries
 License:        BSD
@@ -19,7 +19,7 @@ Source0:        https://github.com/intel/hyperscan/archive/refs/tags/v%{version}
 Source1:        http://udomain.dl.sourceforge.net/project/pcre/pcre/8.45/pcre-8.45.tar.gz
 Source2:        http://udomain.dl.sourceforge.net/project/boost/boost/1.77.0/boost_1_77_0.tar.gz
 
-BuildRequires:  gcc-c++,make,cmake,ragel
+BuildRequires:  make,cmake,ragel
 
 AutoReqProv:    no
 
@@ -58,8 +58,8 @@ other resources needed for developing Hyperscan applications.
 
 ln -s ../pcre-8.45             pcre
 
-# pcre, CMP0026 policy was introduced in CMake version 3.0, CentOS7 is 2.8.12
 %if 0%{?el} <8 || 0%{?rhel} < 8
+# pcre, CMP0026 policy was introduced in CMake version 3.0, CentOS7 is 2.8.12
 sed -i "s/CMAKE_POLICY/#CMAKE_POLICY/g"      pcre/CMakeLists.txt
 %endif
 
@@ -70,7 +70,15 @@ cmake  -DCMAKE_BUILD_TYPE=RelWithDebInfo  \
        -DBUILD_STATIC_AND_SHARED:BOOL=ON  \
        -DBOOST_ROOT=../boost_1_77_0       \
        -DCMAKE_INSTALL_PREFIX=/usr        \
+       -DBUILD_EXAMPLES:BOOL=OFF          \
+       -DCMAKE_C_FLAGS=-fPIC              \
+       -DCMAKE_CXX_FLAGS=-fPIC            \
        ..
+
+#  FAT-RUNTIME SUPPORT, CentOS7 need GCC(>=8)
+#      -DFAT_RUNTIME:BOOL=ON
+#      -DBUILD_AVX512VBMI:BOOL=ON
+
 
 make -j`nproc`
 
@@ -107,7 +115,6 @@ ldconfig >/dev/null 2>&1
 ##############################################################################
 /usr/include/hs/*
 /usr/lib64/*
-/usr/share/doc/hyperscan/examples/*
 
 %changelog
 ##############################################################################
