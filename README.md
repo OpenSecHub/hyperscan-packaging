@@ -66,7 +66,7 @@ In addition, the following software is required for compiling the Hyperscan libr
 > ```bash
 > yum install -y centos-release-scl
 > yum install -y devtoolset-10-gcc-c++
-> source /opt/devtoolset-10/enable
+> scl enable devtoolset-10 bash #source /opt/devtoolset-10/enable
 > 
 > # build hyperscan
 > 
