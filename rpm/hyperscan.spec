@@ -4,8 +4,8 @@
 #                                                                            #
 ##############################################################################
 Name:           hyperscan
-Version:        5.4.0
-Release:        2%{?dist}
+Version:        5.4.2
+Release:        0%{?dist}
 Summary:        Libraries and header files for the hyperscan library
 Group:          Development/Libraries
 License:        BSD
