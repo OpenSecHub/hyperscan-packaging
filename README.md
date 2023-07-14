@@ -10,9 +10,7 @@ This package provides the libraries, include files needed for developing Hypersc
 
 - Support chimera library
 
-- Support link hyperscan static libraries to a dynamic library, by adding `-fPIC` option
-
-- Not Support AVX512 and AVX512BMI
+- Not Support AVX512/AVX512BMI
 
 **Supported distributions and versions**
 
