@@ -66,18 +66,16 @@ sed -i "s/CMAKE_POLICY/#CMAKE_POLICY/g"      pcre/CMakeLists.txt
 mkdir build
 cd    build
 
-cmake  -DCMAKE_BUILD_TYPE=RelWithDebInfo  \
+cmake  ..                                 \
+       -DCMAKE_BUILD_TYPE=MinSizeRel      \
        -DBUILD_STATIC_AND_SHARED:BOOL=ON  \
        -DBOOST_ROOT=../boost_1_77_0       \
        -DCMAKE_INSTALL_PREFIX=/usr        \
-       -DBUILD_EXAMPLES:BOOL=OFF          \
-       -DCMAKE_C_FLAGS=-fPIC              \
-       -DCMAKE_CXX_FLAGS=-fPIC            \
-       ..
+       -DBUILD_EXAMPLES=OFF
 
 #  FAT-RUNTIME SUPPORT, CentOS7 need GCC(>=8)
-#      -DFAT_RUNTIME:BOOL=ON
-#      -DBUILD_AVX512VBMI:BOOL=ON
+#      -DFAT_RUNTIME=ON
+#      -DBUILD_AVX512VBMI=ON
 
 
 make -j`nproc`
